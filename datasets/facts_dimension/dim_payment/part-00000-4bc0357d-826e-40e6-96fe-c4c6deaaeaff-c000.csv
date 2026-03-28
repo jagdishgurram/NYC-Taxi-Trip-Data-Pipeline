@@ -1,0 +1,5 @@
+payment_type_id,payment_type
+1,Cash
+2,Credit Card
+3,Dispute
+4,No Charges
