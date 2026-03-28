@@ -34,6 +34,11 @@ Star schema tables optimized for analytics.
 
 ---
 
+## Data Architecture
+![Data Architecture](docs/data_model.png)
+
+---
+
 ## Pipeline Workflow 
 
 1. Load raw taxi data into Bronze layer
@@ -85,11 +90,6 @@ NYC-Taxi-Trip-Data-Pipeline/
 ├── LICENSE
 └── requirements.txt 
 ```
----
-## Future Improvements
-- Automate pipeline using Airflow
-- Store data in a cloud data warehouse
-- Build dashboard using BI tools
 ---
 ## License
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
