@@ -69,14 +69,19 @@ Star schema tables optimized for analytics.
 ```
 NYC-Taxi-Trip-Data-Pipeline/
 │
+├── configs/
+|
 ├── datasets/
 │   ├── bronze/
 │   ├── silver/
 │   ├── gold/
-│ 
+│   ├── facts_dimension/
+|
 ├── etl/
+│   ├── extract/
 │   ├── transform/
 │   ├── load/
+│   ├── star/
 │ 
 ├── analytics/
 │   ├── final_trip_analysis/
@@ -84,7 +89,10 @@ NYC-Taxi-Trip-Data-Pipeline/
 ├── notebooks/
 │   ├── eda/
 │ 
+├── dags/
+│ 
 ├── docs/
+├── pipeline.py
 ├── README.md
 ├── .gitignore
 ├── LICENSE
