@@ -21,7 +21,7 @@ and used to perform trip analysis and business insights.
 ---
 
 ## Data Architecture
-![Data Architecture]()
+![Data Architecture](docs/data_architecture.png)
 
 **Bronze Layer** \
 Raw taxi trip data ingested from source files.
