@@ -34,8 +34,8 @@ Star schema tables optimized for analytics.
 
 ---
 
-## Data Architecture
-![Data Architecture](docs/data_model.png)
+## Data Model
+![Data Model](docs/data_model.png)
 
 ---
 
