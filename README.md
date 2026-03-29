@@ -100,5 +100,9 @@ NYC-Taxi-Trip-Data-Pipeline/
 └── requirements.txt 
 ```
 ---
+## Future Improvements
+- Orchestrate the ETL workflow using Apache Airflow
+- Deploy the pipeline on a cloud platform for scalable processing.
+---
 ## License
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
