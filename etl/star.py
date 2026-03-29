@@ -7,6 +7,7 @@ load_dotenv()
 def create_star_schema(spark,gold_df):
     
     gold_path = os.getenv("gold")
+    dataset_path = os.getenv("dataset_path")
     
     # Register temp view for SQL queries
     spark.sql("CREATE DATABASE IF NOT EXISTS nyc_taxitrip_db")
@@ -24,7 +25,7 @@ def create_star_schema(spark,gold_df):
               CREATE TABLE nyc_taxitrip_db.dim_payment
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/dim_payment'
+              LOCATION '{dataset_path}/facts_dimension/dim_payment'
               AS
               SELECT
               payment_type AS payment_type_id,
@@ -60,7 +61,7 @@ def create_star_schema(spark,gold_df):
               CREATE TABLE nyc_taxitrip_db.dim_date
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/dim_date'
+              LOCATION '{dataset_path}/facts_dimension/dim_date'
               AS
               SELECT
               date_id,
@@ -75,7 +76,7 @@ def create_star_schema(spark,gold_df):
 
     
     ## CREATING DIM LOCATION
-    spark.read.csv('C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/taxi_zone_lookup.csv', 
+    spark.read.csv(f'{dataset_path}/taxi_zone_lookup.csv', 
                    header=True, inferSchema=True)\
                        .createOrReplaceTempView('TempLocationZone')
                        
@@ -86,16 +87,13 @@ def create_star_schema(spark,gold_df):
               UNION
               SELECT dropoff_location_id FROM nyc_taxitrip_db.nyc_trip_table
               """).createOrReplaceTempView('locationTemp')
-    
-    spark.sql("""
-              SELECT DISTINCT pickup_location_id AS LocationID FROM locationTemp
-              """)
+
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_location
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/dim_location'
+              LOCATION '{dataset_path}/facts_dimension/dim_location'
               AS
               SELECT DISTINCT
               t.LocationID as location_id,
@@ -115,7 +113,7 @@ def create_star_schema(spark,gold_df):
               CREATE TABLE nyc_taxitrip_db.dim_vendor
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/dim_vendor'
+              LOCATION '{dataset_path}/facts_dimension/dim_vendor'
               AS
               SELECT
               VendorID AS vendor_id,
@@ -139,17 +137,17 @@ def create_star_schema(spark,gold_df):
               CREATE TABLE nyc_taxitrip_db.dim_ratecode
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/dim_ratecode'
+              LOCATION '{dataset_path}/facts_dimension/dim_ratecode'
               SELECT DISTINCT
               RatecodeID AS ratecode_id,
               CASE
-              WHEN ratecode_id = 1 THEN 'Standard rate'
-              WHEN ratecode_id = 2 THEN 'JFK Airport'
-              WHEN ratecode_id = 3 THEN 'Newark Airport'
-              WHEN ratecode_id = 4 THEN 'Nassau / Westchester'
-              WHEN ratecode_id = 5 THEN 'Negotiated Fare'
-              WHEN ratecode_id = 6 THEN 'Group Ride'
-              WHEN ratecode_id = 99 THEN 'Unknown'
+              WHEN RatecodeID = 1 THEN 'Standard rate'
+              WHEN RatecodeID = 2 THEN 'JFK Airport'
+              WHEN RatecodeID = 3 THEN 'Newark Airport'
+              WHEN RatecodeID = 4 THEN 'Nassau / Westchester'
+              WHEN RatecodeID = 5 THEN 'Negotiated Fare'
+              WHEN RatecodeID = 6 THEN 'Group Ride'
+              WHEN RatecodeID = 99 THEN 'Unknown'
               ELSE 'Unknown'
               END AS ratecode_name
               FROM (
@@ -161,12 +159,12 @@ def create_star_schema(spark,gold_df):
     spark.sql("SELECT * FROM nyc_taxitrip_db.dim_ratecode").show(5)
 
     ## CREATING FACT TRIP
-    spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.fact_trips")   
+    spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.facts_trip")   
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.facts_trip
               USING CSV
               OPTIONS (header "true")
-              LOCATION 'C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/facts_trips'
+              LOCATION '{dataset_path}/facts_dimension/facts_trips'
               SELECT
               monotonically_increasing_id() AS trip_id, -- SURROGATE KEY
               VendorID AS vendor_id, -- FOREIGN KEY
@@ -185,64 +183,68 @@ def create_star_schema(spark,gold_df):
               """)
     print("FACT For NYCTrips Table Created")
     
-    spark.sql("SHOW TABLES IN nyc_taxitrip_db").show()
-    
     spark.sql("SELECT * FROM nyc_taxitrip_db.facts_trip").show(n=5, truncate=True)  
 
     print("Star Schema Created:)")
     
     ## Creating facts-dimension table
-    spark.sql("DROP TABLE IF EXISTS nyc_taxitrip_db.final_trip_analysis")
+    spark.sql("DROP TABLE IF EXISTS nyc_taxitrip_db.trip_analytics")
     print("Joining All Dimensions with the Fact Table for Final Analysis")
     spark.sql(f"""
-              CREATE TABLE final_trip_analysis
+              CREATE TABLE nyc_taxitrip_db.trip_analytics
               USING PARQUET
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/trip_analytics'
               AS
               SELECT
               f.trip_id,
-
+              
+              -- Date Dimension
               d.day,
               d.month,
               d.year,
               
-              pu.borough as pickup_borough,
-              pu.zone as pickup_zone,
-              do.borough as dropoff_borough,
-              do.zone as dropoff_zone,
+              -- Location Dimensions
+              pu.borough AS pickup_borough,
+              pu.zone AS pickup_zone,
+              do.borough AS dropoff_borough,
+              do.zone AS dropoff_zone,
               
+              -- Vendor
               v.vendor_name,
               
+              -- Trip Metrics
               f.passenger_count,
               f.trip_distance,
               f.fare_amount,
               f.total_amount,
               f.trip_duration,
               
+              -- Ratecode
               r.ratecode_name,
               
+              -- Payment
               p.payment_type
               
               FROM nyc_taxitrip_db.facts_trip f
-              LEFT JOIN nyc_taxitrip_db.dim_date d ON f.date_id = d.date_id
-              LEFT JOIN nyc_taxitrip_db.dim_location pu ON f.pickup_location_id = pu.location_id
-              LEFT JOIN nyc_taxitrip_db.dim_location do ON f.dropoff_location_id = do.location_id
-              LEFT JOIN nyc_taxitrip_db.dim_vendor v ON f.vendor_id = v.vendor_id
-              LEFT JOIN nyc_taxitrip_db.dim_ratecode r ON f.ratecode_id = r.ratecode_id
-              LEFT JOIN nyc_taxitrip_db.dim_payment p ON f.payment_type_id = p.payment_type_id
+              LEFT JOIN nyc_taxitrip_db.dim_date d 
+              ON f.date_id = d.date_id
+              LEFT JOIN nyc_taxitrip_db.dim_location pu 
+              ON f.pickup_location_id = pu.location_id
+              LEFT JOIN nyc_taxitrip_db.dim_location do 
+              ON f.dropoff_location_id = do.location_id
+              LEFT JOIN nyc_taxitrip_db.dim_vendor v 
+              ON f.vendor_id = v.vendor_id
+              LEFT JOIN nyc_taxitrip_db.dim_ratecode r 
+              ON f.ratecode_id = r.ratecode_id
+              LEFT JOIN nyc_taxitrip_db.dim_payment p 
+              ON f.payment_type_id = p.payment_type_id
               """)
-    
+
     spark.sql("SHOW TABLES IN nyc_taxitrip_db").show()
     
-    final_trip_analysis = spark.sql("SELECT * FROM nyc_taxitrip_db.final_trip_analysis")
+    trip_analytics = spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics")
     
-    final_trip_analysis\
-    .coalesce(1).write.mode("overwrite")\
-    .parquet("C:/Users/JAGDISH/OneDrive/Desktop/NYC-Taxi-Trip-Data-Pipeline/datasets/facts_dimension/final_trip_analysis")
-    
-    final_trip_analysis.show(n=5, truncate=True)
     print("Final Analysis Table Created and Written as Parquet")
     
-    spark.stop()
-    print("SparkSession Stopped")
-    
-    return final_trip_analysis
+    return trip_analytics
