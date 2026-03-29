@@ -1,6 +1,6 @@
-# Ignore
+# Ignore local configuration files
 venv/
 .env
 
-# Python cache
+# Ignore Python cache
 __pycache__/
