@@ -18,7 +18,7 @@ and used to perform trip analysis and business insights.
 **SQL** – Querying and analyzing structured data \
 **Star Schema Modeling** – Dimensional data modeling for analytics \
 **Git & GitHub** – Version control and collaboration \
-**Visual Studio Code** – Development environment \
+**Visual Studio Code** – Development environment
 
 ---
 
