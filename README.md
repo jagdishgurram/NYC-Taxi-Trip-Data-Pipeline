@@ -89,8 +89,9 @@ NYC-Taxi-Trip-Data-Pipeline/
 ├── notebooks/
 │   ├── eda/
 │ 
-├── dags/
-│ 
+├── validation/
+│   ├── validate/
+│
 ├── docs/
 ├── pipeline.py
 ├── README.md
