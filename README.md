@@ -13,12 +13,12 @@ and used to perform trip analysis and business insights.
 ---
 
 ## Tech Stack
-**Python** – ETL pipeline development
-**Apache Spark (PySpark)** – Large-scale data processing
-**SQL** – Querying and analyzing structured data
-**Star Schema Modeling** – Dimensional data modeling for analytics
-**Git & GitHub** – Version control and collaboration
-**Visual Studio Code** – Development environment
+**Python** – ETL pipeline development \
+**Apache Spark (PySpark)** – Large-scale data processing \
+**SQL** – Querying and analyzing structured data \
+**Star Schema Modeling** – Dimensional data modeling for analytics \
+**Git & GitHub** – Version control and collaboration \
+**Visual Studio Code** – Development environment \
 
 ---
 
