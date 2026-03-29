@@ -181,11 +181,11 @@ def create_star_schema(spark,gold_df):
               trip_duration
               FROM nyc_taxitrip_db.nyc_trip_table
               """)
-    print("FACT For NYCTrips Table Created")
+    print("FACTS For NYCTrips Table Created")
     
     spark.sql("SELECT * FROM nyc_taxitrip_db.facts_trip").show(n=5, truncate=True)  
 
-    print("Star Schema Created:)")
+    print("Star Schema Succeed:)")
     
     ## Creating facts-dimension table
     spark.sql("DROP TABLE IF EXISTS nyc_taxitrip_db.trip_analytics")

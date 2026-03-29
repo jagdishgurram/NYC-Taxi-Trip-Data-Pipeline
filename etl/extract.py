@@ -10,8 +10,6 @@ def extract_data(spark):
 
     df = spark.read.csv(raw, header=True, inferSchema=True)
 
-    print("Data Extracted Successfully")
-
     df = df.drop("_c0")
 
     df.coalesce(1).\
@@ -19,7 +17,5 @@ def extract_data(spark):
         mode("overwrite").\
         option("header", True).\
         parquet(bronze_path)
-
-    print("Data Stored to Bronze Layer")
 
     return df

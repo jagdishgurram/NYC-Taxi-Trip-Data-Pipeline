@@ -32,7 +32,8 @@ def transform_data(df):
     silver_df = bronze_df.filter(
     (f.col('trip_distance')>0)&
     (f.col('fare_amount')>0)&
-    (f.col('total_amount')>0)
+    (f.col('total_amount')>0)&
+    (f.col("passenger_count")>0)
     ).dropna()
     
     after_filter = silver_df.count()
@@ -44,10 +45,7 @@ def transform_data(df):
         mode("overwrite").\
         option("header", True).\
         parquet(silver_path)
-    
-    print("Silver data written")
 
     silver_df.printSchema()
-    silver_df.show(5)
 
     return silver_df
