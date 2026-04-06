@@ -22,11 +22,6 @@ def create_star_schema(spark,gold_df):
     ## CREATING DIM PAYMENT 
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_payment")
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.dim_payment
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/dim_payment'
-              AS
               SELECT
               payment_type AS payment_type_id,
               CASE
@@ -40,6 +35,13 @@ def create_star_schema(spark,gold_df):
                   SELECT distinct(payment_type) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY payment_type_id Asc
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_payment')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.dim_payment
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/dim_payment'
               """)
     
     print("Dimension For Payment_Type Table Created")
@@ -58,11 +60,6 @@ def create_star_schema(spark,gold_df):
             .createOrReplaceTempView('TempDate')
             
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.dim_date
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/dim_date'
-              AS
               SELECT
               date_id,
               year,
@@ -70,7 +67,15 @@ def create_star_schema(spark,gold_df):
               day,
               week
               FROM TempDate
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_date')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.dim_date
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/dim_date'
               """)
+    
     print("Dimension For Date Table Created")
     spark.sql("SELECT * FROM nyc_taxitrip_db.dim_date").show(5)
 
@@ -90,11 +95,6 @@ def create_star_schema(spark,gold_df):
 
     
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.dim_location
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/dim_location'
-              AS
               SELECT DISTINCT
               t.LocationID as location_id,
               t.Borough as borough,
@@ -103,18 +103,21 @@ def create_star_schema(spark,gold_df):
               FROM TempLocationZone t
               JOIN locationTemp l
               ON t.LocationID = l.pickup_location_id
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_location')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.dim_location
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/dim_location'
               """)
+    
     print("Dimension For Location Table Created")
     spark.sql("SELECT * FROM nyc_taxitrip_db.dim_location").show(5)
     
     ## CREATING DIM VENDOR
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_vendor")
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.dim_vendor
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/dim_vendor'
-              AS
               SELECT
               VendorID AS vendor_id,
               CASE
@@ -127,17 +130,21 @@ def create_star_schema(spark,gold_df):
                   SELECT DISTINCT(VendorID) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY VendorID ASC
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_vendor')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.dim_vendor
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/dim_vendor'
               """)
+    
     print("Dimension For Vendor Table Created")
     spark.sql("SELECT * FROM nyc_taxitrip_db.dim_vendor").show(5)
     
     ## CREATING DIM RATECODE
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_ratecode")
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.dim_ratecode
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/dim_ratecode'
               SELECT DISTINCT
               RatecodeID AS ratecode_id,
               CASE
@@ -154,17 +161,21 @@ def create_star_schema(spark,gold_df):
                   SELECT DISTINCT(RatecodeID) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY ratecode_id ASC
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_ratecode')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.dim_ratecode
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/dim_ratecode'
               """)
+    
     print("Dimension For RateCode Table Created")
     spark.sql("SELECT * FROM nyc_taxitrip_db.dim_ratecode").show(5)
 
     ## CREATING FACT TRIP
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.facts_trip")   
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.facts_trip
-              USING CSV
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/facts_trips'
               SELECT
               monotonically_increasing_id() AS trip_id, -- SURROGATE KEY
               VendorID AS vendor_id, -- FOREIGN KEY
@@ -180,7 +191,15 @@ def create_star_schema(spark,gold_df):
               store_and_fwd_flag,
               trip_duration
               FROM nyc_taxitrip_db.nyc_trip_table
+              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/facts_trip')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.facts_trip
+              USING CSV
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/facts_trip'
               """)
+    
     print("FACTS For NYCTrips Table Created")
     
     spark.sql("SELECT * FROM nyc_taxitrip_db.facts_trip").show(n=5, truncate=True)  
@@ -191,11 +210,6 @@ def create_star_schema(spark,gold_df):
     spark.sql("DROP TABLE IF EXISTS nyc_taxitrip_db.trip_analytics")
     print("Joining All Dimensions with the Fact Table for Final Analysis")
     spark.sql(f"""
-              CREATE TABLE nyc_taxitrip_db.trip_analytics
-              USING PARQUET
-              OPTIONS (header "true")
-              LOCATION '{dataset_path}/facts_dimension/trip_analytics'
-              AS
               SELECT
               f.trip_id,
               
@@ -239,10 +253,17 @@ def create_star_schema(spark,gold_df):
               ON f.ratecode_id = r.ratecode_id
               LEFT JOIN nyc_taxitrip_db.dim_payment p 
               ON f.payment_type_id = p.payment_type_id
+              """).write.mode("overwrite").format("PARQUET").save(f'{dataset_path}/facts_dimension/trip_analytics')
+    
+    spark.sql(f"""
+              CREATE TABLE nyc_taxitrip_db.trip_analytics
+              USING PARQUET
+              OPTIONS (header "true")
+              LOCATION '{dataset_path}/facts_dimension/trip_analytics'
               """)
 
     spark.sql("SHOW TABLES IN nyc_taxitrip_db").show()
-    
+    spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics").show(n=5, truncate=True) 
     trip_analytics = spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics")
     
     print("Final Analysis Table Created and Written as Parquet")
