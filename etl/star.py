@@ -263,7 +263,9 @@ def create_star_schema(spark,gold_df):
               """)
 
     spark.sql("SHOW TABLES IN nyc_taxitrip_db").show()
+    
     spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics").show(n=5, truncate=True) 
+    
     trip_analytics = spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics")
     
     print("Final Analysis Table Created and Written as Parquet")
