@@ -76,7 +76,6 @@ NYC-Taxi-Trip-Data-Pipeline/
 │   ├── logger/
 |
 ├── datasets/
-
 │   ├── gold/
 │   ├── facts_dimension/
 |
