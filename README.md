@@ -71,7 +71,7 @@ Star schema tables optimized for analytics.
 ```
 NYC-Taxi-Trip-Data-Pipeline/
 │
-├── configs/
+├── utils/
 |
 ├── datasets/
 │   ├── bronze/
@@ -103,7 +103,7 @@ NYC-Taxi-Trip-Data-Pipeline/
 ```
 ---
 ## Future Improvements
-- Orchestrate the ETL workflow using Apache Airflow
+- Orchestrate the ETL workflow using Git Hub Actions
 - Deploy the pipeline on a cloud platform for scalable processing.
 ---
 ## License
