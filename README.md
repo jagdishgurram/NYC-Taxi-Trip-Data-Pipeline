@@ -72,10 +72,11 @@ Star schema tables optimized for analytics.
 NYC-Taxi-Trip-Data-Pipeline/
 │
 ├── utils/
+│   ├── spark_config/
+│   ├── logger/
 |
 ├── datasets/
-│   ├── bronze/
-│   ├── silver/
+
 │   ├── gold/
 │   ├── facts_dimension/
 |
