@@ -1,12 +1,13 @@
 from dotenv import load_dotenv
 from pyspark.sql import functions as f
 import os
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 load_dotenv()
 
 def create_star_schema(spark,gold_df):
-    
-    gold_path = os.getenv("gold")
     dataset_path = os.getenv("dataset_path")
     
     # Register temp view for SQL queries
@@ -15,9 +16,9 @@ def create_star_schema(spark,gold_df):
     spark.sql(f"""
     CREATE TABLE nyc_taxitrip_db.nyc_trip_table
     USING PARQUET
-    LOCATION '{gold_path}'
+    LOCATION '{dataset_path}/gold'
     """)
-    print("Database & NycTable Created")
+    logger.info("Database & NycTable Created")
     
     ## CREATING DIM PAYMENT 
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_payment")
@@ -43,10 +44,7 @@ def create_star_schema(spark,gold_df):
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_payment'
               """)
-    
-    print("Dimension For Payment_Type Table Created")
-    spark.sql("SELECT * FROM nyc_taxitrip_db.dim_payment").show(5)
-    
+
     ## CREATING DIM DATE 
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_date")
     gold_df.select(
@@ -75,10 +73,6 @@ def create_star_schema(spark,gold_df):
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_date'
               """)
-    
-    print("Dimension For Date Table Created")
-    spark.sql("SELECT * FROM nyc_taxitrip_db.dim_date").show(5)
-
     
     ## CREATING DIM LOCATION
     spark.read.csv(f'{dataset_path}/taxi_zone_lookup.csv', 
@@ -112,9 +106,6 @@ def create_star_schema(spark,gold_df):
               LOCATION '{dataset_path}/facts_dimension/dim_location'
               """)
     
-    print("Dimension For Location Table Created")
-    spark.sql("SELECT * FROM nyc_taxitrip_db.dim_location").show(5)
-    
     ## CREATING DIM VENDOR
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_vendor")
     spark.sql(f"""
@@ -138,9 +129,6 @@ def create_star_schema(spark,gold_df):
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_vendor'
               """)
-    
-    print("Dimension For Vendor Table Created")
-    spark.sql("SELECT * FROM nyc_taxitrip_db.dim_vendor").show(5)
     
     ## CREATING DIM RATECODE
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_ratecode")
@@ -170,9 +158,6 @@ def create_star_schema(spark,gold_df):
               LOCATION '{dataset_path}/facts_dimension/dim_ratecode'
               """)
     
-    print("Dimension For RateCode Table Created")
-    spark.sql("SELECT * FROM nyc_taxitrip_db.dim_ratecode").show(5)
-
     ## CREATING FACT TRIP
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.facts_trip")   
     spark.sql(f"""
@@ -200,15 +185,11 @@ def create_star_schema(spark,gold_df):
               LOCATION '{dataset_path}/facts_dimension/facts_trip'
               """)
     
-    print("FACTS For NYCTrips Table Created")
-    
-    spark.sql("SELECT * FROM nyc_taxitrip_db.facts_trip").show(n=5, truncate=True)  
-
-    print("Star Schema Succeed:)")
+    logger.info("Star Schema Created Successfully")
     
     ## Creating facts-dimension table
     spark.sql("DROP TABLE IF EXISTS nyc_taxitrip_db.trip_analytics")
-    print("Joining All Dimensions with the Fact Table for Final Analysis")
+    logger.info("Running final analysis")
     spark.sql(f"""
               SELECT
               f.trip_id,
@@ -261,13 +242,7 @@ def create_star_schema(spark,gold_df):
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/trip_analytics'
               """)
-
-    spark.sql("SHOW TABLES IN nyc_taxitrip_db").show()
-    
-    spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics").show(n=5, truncate=True) 
     
     trip_analytics = spark.sql("SELECT * FROM nyc_taxitrip_db.trip_analytics")
-    
-    print("Final Analysis Table Created and Written as Parquet")
     
     return trip_analytics

@@ -1,11 +1,14 @@
 from dotenv import load_dotenv
 from pyspark.sql import functions as f
 import os
+from utils.logger import get_logger
 
 load_dotenv()
 
+logger = get_logger(__name__)
+
 def transform_data(df):
-    silver_path = os.getenv("silver")
+    dataset_path = os.getenv("dataset_path")
 
     bronze_df = df.select('VendorID',
                           'tpep_pickup_datetime',
@@ -24,7 +27,7 @@ def transform_data(df):
                             .withColumnRenamed('PULocationID','pickup_location_id')\
                             .withColumnRenamed('DOLocationID','dropoff_location_id')
                             
-    print("Filtered and renamed columns") 
+    logger.info("Filtered and renamed columns") 
     
     before_filter = bronze_df.count()
     
@@ -37,15 +40,13 @@ def transform_data(df):
     ).dropna()
     
     after_filter = silver_df.count()
-    print(f"Records before cleaning: {before_filter}")
-    print(f"Records after cleaning & dropna: {after_filter}")
+    logger.info(f"Records before cleaning: {before_filter}")
+    logger.info(f"Records after cleaning & dropna: {after_filter}")
 
     silver_df.coalesce(1).\
         write.\
         mode("overwrite").\
         option("header", True).\
-        parquet(silver_path)
-
-    silver_df.printSchema()
+        parquet(f"{dataset_path}/silver")
 
     return silver_df

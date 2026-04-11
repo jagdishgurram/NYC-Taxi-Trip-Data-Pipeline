@@ -6,7 +6,7 @@ load_dotenv()
 def extract_data(spark):
 
     raw = os.getenv("RAW_DATA")
-    bronze_path = os.getenv("bronze")
+    dataset_path = os.getenv("dataset_path")
 
     df = spark.read.csv(raw, header=True, inferSchema=True)
 
@@ -16,6 +16,6 @@ def extract_data(spark):
         write.\
         mode("overwrite").\
         option("header", True).\
-        parquet(bronze_path)
+        parquet(f"{dataset_path}/bronze")
 
     return df

@@ -1,4 +1,7 @@
 from pyspark.sql import functions as f
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def run_all_validations(df):
@@ -13,7 +16,6 @@ def run_all_validations(df):
 
     #    print("Null validation passed")
 
-
     def validate_negative_values(df):
         
         if df.filter(f.col("trip_distance") < 0).count() > 0:
@@ -24,7 +26,6 @@ def run_all_validations(df):
 
     #    print("Numeric validation passed")
 
-
     def validate_passenger_count(df):
 
         invalid = df.filter(f.col("passenger_count") <= 0).count()
@@ -34,4 +35,4 @@ def run_all_validations(df):
 
     #    print("Passenger count validation passed")
 
-    print("All validations passed")
+    logger.info("Validation phase cleared")
