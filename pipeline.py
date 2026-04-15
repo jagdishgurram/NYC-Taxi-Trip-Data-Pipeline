@@ -13,7 +13,6 @@ def run_pipeline():
     
     try:
         spark = get_spark_session()
-        spark.sparkContext.setLogLevel("ERROR")
         logger.info("SparkSession Created")
     except Exception as e:
         logger.error(f"SparkSession Failed: {e}")
