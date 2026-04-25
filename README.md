@@ -95,8 +95,11 @@ NYC-Taxi-Trip-Data-Pipeline/
 │ 
 ├── validation/
 │   ├── validate/
+│ 
+├── dags/
 │
 ├── docs/
+├── docker-compose.yaml
 ├── pipeline.py
 ├── README.md
 ├── .gitignore
