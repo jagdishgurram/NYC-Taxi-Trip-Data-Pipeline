@@ -1,6 +1,10 @@
 # Ignore local configuration files
-venv/
+.venv/
 .env
+.git/
 
+logs/
 # Ignore Python cache
 __pycache__/
+datasets/
+
