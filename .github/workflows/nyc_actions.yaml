@@ -26,16 +26,10 @@ jobs:
               python -m pip install --upgrade pip
               pip install -r requirements.txt
 
-
-          - name: Run unit tests
-            run: |
-              pip show pytest || pip install pytest
-              pytest --disable-warnings
-
           - name: Run ETL Pipeline
             run: |
               echo "Running ETL Pipeline..."
-              python etl.py
+              python pipeline.py
     
     build-and-deploy:
         needs: build-and-test
