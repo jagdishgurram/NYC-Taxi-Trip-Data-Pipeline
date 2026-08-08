@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest 
     env: 
       RAW_DATA: testing/sample/yellow_tripdata_2019.csv 
-      SAMPLE_DATA: testing/sample/output/
 
     steps:
       - name: Checkout code 
@@ -32,7 +31,6 @@ jobs:
       - name: Debug environment
         run: |
           echo "RAW_DATA=$RAW_DATA"
-          echo "SAMPLE_DATA=$SAMPLE_DATA"
           ls -la
           ls -la testing/sample/
       
