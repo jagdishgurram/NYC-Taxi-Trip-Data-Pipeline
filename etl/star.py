@@ -82,9 +82,13 @@ def create_star_schema(spark,gold_df):
     spark.sql(f"DROP TABLE IF EXISTS nyc_taxitrip_db.dim_location")
     
     spark.sql("""
-              SELECT pickup_location_id FROM nyc_taxitrip_db.nyc_trip_table
+              SELECT pickup_location_id AS location_id 
+              FROM nyc_taxitrip_db.nyc_trip_table
+              
               UNION
-              SELECT dropoff_location_id FROM nyc_taxitrip_db.nyc_trip_table
+              
+              SELECT dropoff_location_id AS location_id 
+              FROM nyc_taxitrip_db.nyc_trip_table
               """).createOrReplaceTempView('locationTemp')
 
     
@@ -96,7 +100,7 @@ def create_star_schema(spark,gold_df):
               t.service_zone
               FROM TempLocationZone t
               JOIN locationTemp l
-              ON t.LocationID = l.pickup_location_id
+              ON t.LocationID = l.location_id
               """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_location')
     
     spark.sql(f"""
@@ -239,7 +243,6 @@ def create_star_schema(spark,gold_df):
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.trip_analytics
               USING PARQUET
-              OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/trip_analytics'
               """)
     

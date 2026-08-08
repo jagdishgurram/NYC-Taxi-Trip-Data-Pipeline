@@ -93,8 +93,9 @@ NYC-Taxi-Trip-Data-Pipeline/
 ├── notebooks/
 │   ├── eda/
 │ 
-├── validation/
+├── testing/
 │   ├── validate/
+│   ├── sample/
 │ 
 ├── dags/
 │
@@ -103,8 +104,7 @@ NYC-Taxi-Trip-Data-Pipeline/
 ├── pipeline.py
 ├── README.md
 ├── .gitignore
-├── LICENSE
-└── requirements.txt 
+└── LICENSE 
 ```
 ---
 ## Future Improvements

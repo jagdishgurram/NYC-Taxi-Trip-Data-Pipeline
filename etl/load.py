@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from pyspark.sql import functions as f
 import os
 from utils.logger import get_logger
+from sqlalchemy import create_engine
 
 logger = get_logger(__name__)
 
