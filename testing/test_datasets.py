@@ -7,7 +7,8 @@ from utils.spark_config import get_spark_session
 @pytest.fixture
 def  transform_func():
     spark = get_spark_session()
-    df = extract_data(spark)
+    df = extract_data(spark,
+                      raw="NYC-Taxi-Trip-Data-Pipeline/testing/sample_data/yellow_tripdata_2019.csv")
     transform_df = transform_data(df)
     return transform_df
     
@@ -30,9 +31,9 @@ def test_validate_negative_values(transform_func):
     for col in ["trip_distance", "fare_amount"]:
         negative_count = transform_func.filter(f.col(col)<0).count()
     
-    assert negative_count == 0,(
-        f"Column {col} has {negative_count} Negative Values"
-    )
+        assert negative_count == 0,(
+            f"Column {col} has {negative_count} Negative Values"
+        )
             
 def test_passenger_count(transform_func):
     invalid = transform_func.filter(f.col("passenger_count") <= 0).count()

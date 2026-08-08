@@ -3,7 +3,7 @@ import os
 
 load_dotenv()
 
-def extract_data(spark):
+def extract_data(spark,raw=None, dataset_path=None):
 
     raw = os.getenv("RAW_DATA")
     dataset_path = os.getenv("dataset_path")
