@@ -8,4 +8,6 @@ dependencies = [
     "apache-airflow>=3.2.1",
     "dotenv>=0.9.9",
     "pyspark>=4.1.2",
+    "pytest>=9.1.1",
+    "sqlalchemy>=2.0.49",
 ]

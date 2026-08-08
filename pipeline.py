@@ -3,7 +3,7 @@ from etl.extract import extract_data
 from etl.transform import transform_data
 from etl.load import load_data
 from etl.star import create_star_schema
-from validation.validate import run_all_validations
+from testing import test_datasets
 from analytics.final_trip_analysis import final_analytic
 from utils.logger import get_logger
 
@@ -25,7 +25,10 @@ def run_pipeline():
         silver_df = transform_data(raw_df)
         logger.info("Silver layer created")
         
-        run_all_validations(silver_df)
+        test_datasets.test_data_not_empty(silver_df)
+        test_datasets.test_passenger_count(silver_df)
+        test_datasets.test_validate_negative_values(silver_df)
+        test_datasets.test_validate_nulls(silver_df)
         
         gold_df = load_data(spark, silver_df)
         logger.info("Gold layer ready")

@@ -4,14 +4,28 @@ from datetime import datetime,timedelta
 from etl.extract import extract_data
 from etl.transform import transform_data
 from etl.load import load_data
-from validation.validate import run_all_validations
+from testing.test_datasets import run_all_validations
 from etl.star import create_star_schema
+from airflow.models import variable
+
+email = variable.get("alert_email")
+
+default_args = {
+    "owner": "Jagdish",
+    "retries": 2,
+    "retry_delay": timedelta(minutes=5),
+    "email": [email],
+    "email_on_failure": True,
+    "email_on_retry": True,
+    "email_on_success": False   # Optional
+    }
 
 @dag(
     dag_id="nyc_taxi_pipeline",
     start_date=datetime(2026, 1, 1),
     schedule=None,
-    catchup=False
+    catchup=False,
+    default_args=default_args
 )
 
 def pipeline_nyc():
