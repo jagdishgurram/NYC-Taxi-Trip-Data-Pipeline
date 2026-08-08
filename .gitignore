@@ -2,7 +2,7 @@
 .venv/
 .env
 .git/
-
+.pytest_cache/
 logs/
 # Ignore Python cache
 __pycache__/
