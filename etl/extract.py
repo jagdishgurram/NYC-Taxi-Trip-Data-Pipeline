@@ -5,8 +5,8 @@ load_dotenv()
 
 def extract_data(spark,raw=None, dataset_path=None):
 
-    raw = raw or os.getenv("RAW_DATA")
-    dataset_path = dataset_path or os.getenv("dataset_path")
+    raw = os.getenv("RAW_DATA")
+    dataset_path = os.getenv("dataset_path")
 
     df = spark.read.csv(raw, header=True, inferSchema=True)
 

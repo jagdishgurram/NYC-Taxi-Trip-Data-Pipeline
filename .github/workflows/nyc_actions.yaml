@@ -10,8 +10,8 @@ jobs:
   build-and-test: 
     runs-on: ubuntu-latest 
     env: 
-      RAW_DATA: testing\sample\yellow_tripdata_2019.csv 
-      DATASET_PATH: testing\sample\output\ 
+      RAW: testing/sample/yellow_tripdata_2019.csv 
+      DATASET_PATH: testing/sample/output/
 
     steps:
       - name: Checkout code 
