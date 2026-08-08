@@ -10,8 +10,8 @@ jobs:
   build-and-test: 
     runs-on: ubuntu-latest 
     env: 
-      RAW: testing/sample/yellow_tripdata_2019.csv 
-      DATASET_PATH: testing/sample/output/
+      RAW_DATA: testing/sample/yellow_tripdata_2019.csv 
+      dataset_path: testing/sample/output/
 
     steps:
       - name: Checkout code 
@@ -28,6 +28,13 @@ jobs:
       - name: Install dependencies 
         run: | 
           uv sync 
+
+      - name: Debug environment
+        run: |
+          echo "RAW_DATA=$RAW_DATA"
+          echo "DATASET_PATH=$dataset_path"
+          ls -la
+          ls -la data/test/
       
       - name: Testing Data Quality 
         run: | 
