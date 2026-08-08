@@ -34,7 +34,7 @@ jobs:
           echo "RAW_DATA=$RAW_DATA"
           echo "DATASET_PATH=$dataset_path"
           ls -la
-          ls -la data/test/
+          ls -la testing/sample/
       
       - name: Testing Data Quality 
         run: | 
