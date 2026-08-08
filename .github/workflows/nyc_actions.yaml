@@ -4,7 +4,8 @@ on:
     branches: 
       - main 
   workflow_dispatch: 
-  # schedule: # - cron: '0 0 * * *' # Runs daily at midnight UTC 
+  schedule:
+    - cron: '0 11 * * 0' # Runs daily at midnight UTC 
 
 jobs: 
   build-and-test: 
