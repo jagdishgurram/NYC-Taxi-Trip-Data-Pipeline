@@ -47,6 +47,6 @@ def transform_data(df):
         write.\
         mode("overwrite").\
         option("header", True).\
-        csv(f"{dataset_path}/silver")
+        parquet(f"{dataset_path}/silver")
 
     return silver_df

@@ -16,6 +16,6 @@ def extract_data(spark,raw=None, dataset_path=None):
         write.\
         mode("overwrite").\
         option("header", True).\
-        csv(f"{dataset_path}/bronze")
+        parquet(f"{dataset_path}/bronze")
 
     return df
