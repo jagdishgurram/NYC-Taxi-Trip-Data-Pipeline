@@ -7,8 +7,7 @@ from utils.spark_config import get_spark_session
 @pytest.fixture
 def  transform_func():
     spark = get_spark_session()
-    df = extract_data(spark,
-                      raw="NYC-Taxi-Trip-Data-Pipeline/testing/sample_data/yellow_tripdata_2019.csv")
+    df = extract_data(spark)
     transform_df = transform_data(df)
     return transform_df
     
