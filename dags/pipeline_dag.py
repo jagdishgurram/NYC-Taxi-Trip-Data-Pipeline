@@ -6,9 +6,9 @@ from etl.transform import transform_data
 from etl.load import load_data
 from testing.test_datasets import run_all_validations
 from etl.star import create_star_schema
-from airflow.models import variable
+from airflow.models import Variable
 
-email = variable.get("alert_email")
+email = Variable.get("alert_email", default_var=None)
 
 default_args = {
     "owner": "Jagdish",
@@ -17,7 +17,7 @@ default_args = {
     "email": [email],
     "email_on_failure": True,
     "email_on_retry": True,
-    "email_on_success": False   # Optional
+    "email_on_success": False,   # Optional
     }
 
 @dag(
@@ -25,7 +25,7 @@ default_args = {
     start_date=datetime(2026, 1, 1),
     schedule=None,
     catchup=False,
-    default_args=default_args
+    default_args=default_args,
 )
 
 def pipeline_nyc():
@@ -57,10 +57,10 @@ def pipeline_nyc():
 
     # Defining Dag Dependencies
     extract = extract_task()
-    transform = transform_task()
-    validate = validate_task()
-    load = load_task()
-    star = star_task()
+    transform = transform_task(extract)
+    validate = validate_task(transform)
+    load = load_task(validate)
+    star = star_task(load)
 
     extract >> transform >> validate >> load >> star
 

@@ -5,7 +5,7 @@ def get_spark_session():
         SparkSession\
         .builder\
         .appName("NYC Data Pipeline")\
-        .master("local[*]")\
+        .master('local[*]')\
         .getOrCreate()
         )
         

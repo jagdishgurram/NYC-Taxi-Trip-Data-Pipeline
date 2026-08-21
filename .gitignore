@@ -7,4 +7,5 @@ logs/
 # Ignore Python cache
 __pycache__/
 datasets/
+spark-events/
 
