@@ -48,5 +48,7 @@ def transform_data(df):
         mode("overwrite").\
         option("header", True).\
         parquet(f"{dataset_path}/silver")
+    
+    logger.info("DataSets Extracted To SIlver")
 
     return silver_df

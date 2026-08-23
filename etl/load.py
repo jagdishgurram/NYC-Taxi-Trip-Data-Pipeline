@@ -39,4 +39,6 @@ def load_data(spark, silver_df):
         option("header", True).\
         parquet(f"{dataset_path}/gold")
     
+    logger.info("Gold Layer Ready")
+    
     return gold_df

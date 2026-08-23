@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from pyspark.sql import functions as f
 import os
 from utils.logger import get_logger
+from sqlalchemy import create_engine
 
 logger = get_logger(__name__)
 
@@ -36,11 +37,11 @@ def create_star_schema(spark,gold_df):
                   SELECT distinct(payment_type) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY payment_type_id Asc
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_payment')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/dim_payment')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_payment
-              USING CSV
+              USING PARQUET
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_payment'
               """)
@@ -65,11 +66,12 @@ def create_star_schema(spark,gold_df):
               day,
               week
               FROM TempDate
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_date')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/dim_date')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_date
-              USING CSV
+              USING PARQUET
+              
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_date'
               """)
@@ -101,11 +103,11 @@ def create_star_schema(spark,gold_df):
               FROM TempLocationZone t
               JOIN locationTemp l
               ON t.LocationID = l.location_id
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_location')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/dim_location')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_location
-              USING CSV
+              USING PARQUET
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_location'
               """)
@@ -125,11 +127,11 @@ def create_star_schema(spark,gold_df):
                   SELECT DISTINCT(VendorID) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY VendorID ASC
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_vendor')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/dim_vendor')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_vendor
-              USING CSV
+              USING PARQUET
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_vendor'
               """)
@@ -153,11 +155,11 @@ def create_star_schema(spark,gold_df):
                   SELECT DISTINCT(RatecodeID) FROM nyc_taxitrip_db.nyc_trip_table
               ) temp
               ORDER BY ratecode_id ASC
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/dim_ratecode')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/dim_ratecode')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.dim_ratecode
-              USING CSV
+              USING PARQUET
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/dim_ratecode'
               """)
@@ -180,11 +182,11 @@ def create_star_schema(spark,gold_df):
               store_and_fwd_flag,
               trip_duration
               FROM nyc_taxitrip_db.nyc_trip_table
-              """).write.mode("overwrite").format("csv").option("header", True).save(f'{dataset_path}/facts_dimension/facts_trip')
+              """).write.mode("overwrite").format("parquet").option("header", True).save(f'{dataset_path}/facts_dimension/facts_trip')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.facts_trip
-              USING CSV
+              USING PARQUET
               OPTIONS (header "true")
               LOCATION '{dataset_path}/facts_dimension/facts_trip'
               """)
@@ -238,7 +240,7 @@ def create_star_schema(spark,gold_df):
               ON f.ratecode_id = r.ratecode_id
               LEFT JOIN nyc_taxitrip_db.dim_payment p 
               ON f.payment_type_id = p.payment_type_id
-              """).write.mode("overwrite").format("PARQUET").save(f'{dataset_path}/facts_dimension/trip_analytics')
+              """).write.mode("overwrite").format("parquet").save(f'{dataset_path}/facts_dimension/trip_analytics')
     
     spark.sql(f"""
               CREATE TABLE nyc_taxitrip_db.trip_analytics

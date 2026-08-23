@@ -46,7 +46,7 @@ def final_analytic(spark,trip_analytics):
             
             "Payment method generating highest revenue":
             """
-            SELECT payment_type, FORMAT_NUMBER(SUM(total_amount),2) as revenue
+            SELECT payment_type, FORMAT_NUMBER(SUM(CAST(total_amount AS DECIMAL(18,2))),2) as revenue
             FROM final_trip_analysis
             GROUP BY payment_type
             ORDER BY revenue DESC
@@ -60,13 +60,13 @@ def final_analytic(spark,trip_analytics):
             
             "Average trip duration":
             """
-            SELECT CONCAT(ROUND(AVG(trip_duration),2),' MINS') as avg_trip_duration 
+            SELECT CONCAT(ROUND(AVG(trip_duration),2),' Mins') as avg_trip_duration 
             FROM final_trip_analysis
             """,
             
-            "borough by generating the highest revenue":
+            "Borough by generating the highest revenue":
             """
-            SELECT pickup_borough, dropoff_borough, FORMAT_NUMBER(SUM(total_amount),2) as revenue
+            SELECT pickup_borough, dropoff_borough, ROUND(SUM(CAST(total_amount AS DECIMAL(18,2))), 2) AS revenue
             FROM final_trip_analysis
             GROUP BY pickup_borough, dropoff_borough
             ORDER BY revenue DESC
@@ -81,10 +81,10 @@ def final_analytic(spark,trip_analytics):
             
             "Zones with high passanger demand":
             """
-            SELECT pickup_zone, count(pickup_zone) as count
+            SELECT pickup_zone, COUNT(*) as trip_count
             FROM final_trip_analysis
             GROUP BY pickup_zone
-            ORDER BY count DESC
+            ORDER BY trip_count DESC
             LIMIT 5
             """,
             
@@ -94,6 +94,7 @@ def final_analytic(spark,trip_analytics):
             FROM final_trip_analysis
             WHERE CAST(trip_distance AS DOUBLE) > 0
             GROUP BY pickup_zone
+            HAVING SUM(trip_distance) > 0
             ORDER BY fare_per_distance DESC
             LIMIT 5
             """,

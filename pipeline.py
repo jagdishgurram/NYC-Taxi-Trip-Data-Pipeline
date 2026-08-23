@@ -20,10 +20,8 @@ def run_pipeline():
     
     try:
         raw_df = extract_data(spark)
-        logger.info("Bronze layer created")
         
         silver_df = transform_data(raw_df)
-        logger.info("Silver layer created")
         
         test_datasets.test_data_not_empty(silver_df)
         test_datasets.test_passenger_count(silver_df)
@@ -31,13 +29,12 @@ def run_pipeline():
         test_datasets.test_validate_nulls(silver_df)
         
         gold_df = load_data(spark, silver_df)
-        logger.info("Gold layer ready")
         
         final_df = create_star_schema(spark, gold_df)
         
         logger.info("Pipeline completed")
         
-        # final_analytic(spark, final_df) # For Final Analysis Perform
+        final_analytic(spark, final_df) # For Final Analysis Perform
     
     except Exception as e:
         logger.error(f"Pipeline Failed: {e}")
