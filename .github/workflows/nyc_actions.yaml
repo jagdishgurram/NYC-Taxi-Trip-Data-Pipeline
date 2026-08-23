@@ -38,11 +38,6 @@ jobs:
       - name: Testing Data Quality 
         run: | 
           uv run pytest 
-      
-      - name: Run ETL Pipeline 
-        run: | 
-          echo "Running ETL Pipeline..." 
-          uv run python pipeline.py
 
   build-and-deploy: 
     needs: build-and-test 
