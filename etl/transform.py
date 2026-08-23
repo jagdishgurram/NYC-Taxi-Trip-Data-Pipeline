@@ -32,7 +32,12 @@ def transform_data(df):
     before_filter = bronze_df.count()
     
     # Filter invalid rows 
-    silver_df = bronze_df.filter(
+    silver_df = bronze_df \
+    .withColumn("trip_distance", f.col("trip_distance").cast("double")) \
+    .withColumn("fare_amount", f.col("fare_amount").cast("double")) \
+    .withColumn("total_amount", f.col("total_amount").cast("double")) \
+    .withColumn("passenger_count", f.col("passenger_count").cast("double")) \
+    .filter(
     (f.col('trip_distance')>0)&
     (f.col('fare_amount')>0)&
     (f.col('total_amount')>0)&

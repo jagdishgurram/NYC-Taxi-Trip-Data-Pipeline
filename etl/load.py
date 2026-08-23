@@ -23,13 +23,13 @@ def load_data(spark, silver_df):
                                       .otherwise('Unknown')
                                       )
 
-    gold_dff = gold_dff.withColumn('RatecodeID',f.col('RatecodeID').cast('int'))\
-                         .withColumn('passenger_count', f.col('passenger_count').cast('int'))
+    gold_dff = gold_dff.withColumn('RatecodeID',f.col('RatecodeID').cast('double'))\
+                         .withColumn('passenger_count', f.col('passenger_count').cast('double'))
     
     # Calculate trip duration
     gold_df = gold_dff.withColumn('trip_duration',
                                    f.floor((f.unix_timestamp(f.col('dropoff_datetime'))-
-                                            f.unix_timestamp(f.col('pickup_datetime')))/60).cast('int'))
+                                            f.unix_timestamp(f.col('pickup_datetime')))/60).cast('double'))
     
     logger.info(f'Total Trip records: {gold_df.count()}')
     

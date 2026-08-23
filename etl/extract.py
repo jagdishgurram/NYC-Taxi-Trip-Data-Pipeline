@@ -12,7 +12,7 @@ def extract_data(spark,raw=None, dataset_path=None):
     raw = os.getenv("RAW_DATA")
     dataset_path = os.getenv("dataset_path")
 
-    df = spark.read.parquet(raw, header=True)
+    df = spark.read.csv(raw, header=True)
 
     df = df.drop("_c0")
 
@@ -20,7 +20,7 @@ def extract_data(spark,raw=None, dataset_path=None):
         write.\
         mode("overwrite").\
         option("header", True).\
-        parquet(f"{dataset_path}/bronze")
+        csv(f"{dataset_path}/bronze")
     
     logger.info("DataSets Extracted To Bronze")
 
